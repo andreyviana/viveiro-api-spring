@@ -1,5 +1,7 @@
 package com.apirest.viveiro.controller;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -8,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.apirest.viveiro.model.PlantaModel;
 import com.apirest.viveiro.repository.PlantaRepository;
@@ -19,6 +22,29 @@ public class PlantaController {
 	
 	public PlantaController(final PlantaRepository plantaRepository) {
 		this.plantaRepository = plantaRepository;
+	}
+	
+	@GetMapping("/plantas/buscar")
+	public List<PlantaModel> buscarPlantas(
+		@RequestParam(name = "temFruta", required = false) Boolean temFruta,
+		@RequestParam(name = "quantidadeMaxima", required = false) Integer quantidade
+	) {
+		if (temFruta != null && !temFruta && quantidade == null) 
+			return this.plantaRepository.findByTemFrutaFalse();
+		
+		if (temFruta != null && temFruta && quantidade == null)
+			return this.plantaRepository.findByTemFrutaTrue();
+		
+		if (quantidade != null && temFruta == null)
+			return this.plantaRepository.findByQuantidadeLessThan(quantidade);
+		
+		if (quantidade != null && temFruta != null && temFruta)
+			return this.plantaRepository.findByTemFrutaTrueAndQuantidadeLessThan(quantidade);
+		
+		if (quantidade != null && temFruta != null && !temFruta)
+			return this.plantaRepository.findByTemFrutaFalseAndQuantidadeLessThan(quantidade);
+
+		return new ArrayList<>();
 	}
 	
 	@GetMapping("/plantas")
