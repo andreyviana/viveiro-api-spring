@@ -66,5 +66,5 @@ public class PlantaModel {
 	public void setQuantidade(Integer quantidade) {
 		this.quantidade = quantidade;
 	}
-	
+
 }
