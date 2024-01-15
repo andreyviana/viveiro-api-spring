@@ -29,22 +29,13 @@ public class PlantaController {
 		@RequestParam(name = "temFruta", required = false) Boolean temFruta,
 		@RequestParam(name = "quantidadeMaxima", required = false) Integer quantidade
 	) {
-		if (temFruta != null && !temFruta && quantidade == null) 
-			return this.plantaRepository.findByTemFrutaFalse();
-		
-		if (temFruta != null && temFruta && quantidade == null)
-			return this.plantaRepository.findByTemFrutaTrue();
-		
-		if (quantidade != null && temFruta == null)
-			return this.plantaRepository.findByQuantidadeLessThan(quantidade);
-		
-		if (quantidade != null && temFruta != null && temFruta)
-			return this.plantaRepository.findByTemFrutaTrueAndQuantidadeLessThan(quantidade);
-		
-		if (quantidade != null && temFruta != null && !temFruta)
-			return this.plantaRepository.findByTemFrutaFalseAndQuantidadeLessThan(quantidade);
-
-		return new ArrayList<>();
+		if (temFruta == null) {
+			return quantidade == null ? new ArrayList<>() : this.plantaRepository.findByQuantidadeLessThan(quantidade);
+		} else if (temFruta) {
+			return quantidade == null ? this.plantaRepository.findByTemFrutaTrue() : this.plantaRepository.findByTemFrutaTrueAndQuantidadeLessThan(quantidade);
+		} else {
+			return quantidade == null ? this.plantaRepository.findByTemFrutaFalse() : this.plantaRepository.findByTemFrutaFalseAndQuantidadeLessThan(quantidade);
+		}
 	}
 	
 	@GetMapping("/plantas")
@@ -71,11 +62,11 @@ public class PlantaController {
 		}
 
 		PlantaModel plantaParaAtualizar = plantaParaAtualizarOptional.get();
-		
+
 		if (p.getNome() != null) {
 			plantaParaAtualizar.setNome(p.getNome());
 		}
-		
+
 		if (p.getQuantidade() != null) {
 			plantaParaAtualizar.setQuantidade(p.getQuantidade());
 		}
